@@ -7,8 +7,5 @@
 	"version": "5.9.0",
 	"releasenote": "Added FlxInputText, FlxG.assets, FlxBasePath and more",
 	"contributors": ["haxeflixel", "Gama11", "GeoKureli"],
-	"dependencies": {
-		"lime": "",
-		"openfl": ""
-	}
+	"dependencies": {}
 }

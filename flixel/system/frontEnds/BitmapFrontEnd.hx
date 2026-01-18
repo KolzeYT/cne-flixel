@@ -1,14 +1,14 @@
 package flixel.system.frontEnds;
 
-import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxAssets;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import openfl.Assets;
-#if FLX_OPENGL_AVAILABLE
+import openfl.display.BitmapData;
+#if !flash
 import lime.graphics.opengl.GL;
 #end
 
@@ -19,35 +19,31 @@ import lime.graphics.opengl.GL;
  */
 class BitmapFrontEnd
 {
-	#if FLX_OPENGL_AVAILABLE
+	#if !flash
 	/**
-	 * Returns the maximum allowed width and height (in pixels) for a texture.
-	 * This value is only available on hardware-accelerated targets that use OpenGL.
-	 * On unsupported targets, the returned value will always be -1.
-	 * 
-	 * @see https://opengl.gpuinfo.org/displaycapability.php?name=GL_MAX_TEXTURE_SIZE
+	 * Gets max texture size for native targets
 	 */
 	public var maxTextureSize(get, never):Int;
 	#end
-
+	
 	/**
 	 * Helper FlxFrame object. Containing only one frame.
 	 * Useful for drawing colored rectangles of all sizes in FlxG.renderTile mode.
 	 */
 	public var whitePixel(get, never):FlxFrame;
-
+	
 	@:allow(flixel.system.frontEnds.BitmapLogFrontEnd)
 	var _cache:Map<String, FlxGraphic>;
-
+	
 	var _whitePixel:FlxFrame;
-
+	
 	var _lastUniqueKeyIndex:Int = 0;
-
+	
 	public function new()
 	{
 		reset();
 	}
-
+	
 	public function onAssetsReload(_):Void
 	{
 		for (key in _cache.keys())
@@ -59,7 +55,7 @@ class BitmapFrontEnd
 			}
 		}
 	}
-
+	
 	/**
 	 * New context handler.
 	 * Regenerates tilesheets for all dumped graphics objects in the cache.
@@ -75,7 +71,7 @@ class BitmapFrontEnd
 			}
 		}
 	}
-
+	
 	/**
 	 * Dumps bits of all graphics in the cache. This frees some memory, but you can't read/write pixels on those graphics anymore.
 	 * You can call undump() method for each FlxGraphic (or undumpCache()) object which will restore it again.
@@ -93,7 +89,7 @@ class BitmapFrontEnd
 		}
 		#end
 	}
-
+	
 	/**
 	 * Restores graphics of all dumped objects in the cache.
 	 */
@@ -110,7 +106,7 @@ class BitmapFrontEnd
 		}
 		#end
 	}
-
+	
 	/**
 	 * Check the local bitmap cache to see if a bitmap with this key has been loaded already.
 	 *
@@ -121,7 +117,7 @@ class BitmapFrontEnd
 	{
 		return get(Key) != null;
 	}
-
+	
 	/**
 	 * Generates a new BitmapData object (a colored rectangle) and caches it.
 	 *
@@ -136,29 +132,33 @@ class BitmapFrontEnd
 	{
 		return FlxGraphic.fromRectangle(Width, Height, Color, Unique, Key);
 	}
-
+	
 	/**
 	 * Loads a bitmap from a file, clones it if necessary and caches it.
-	 * @param   graphic  Optional FlxGraphics object to create FlxGraphic from.
-	 * @param   unique   Ensures that the bitmap data uses a new slot in the cache.
-	 * @param   key      Force the cache to use a specific Key to index the bitmap.
-	 * @return  The FlxGraphic we just created.
+	 * @param	Graphic		Optional FlxGraphics object to create FlxGraphic from.
+	 * @param	Frames			Optional FlxFramesCollection object to create FlxGraphic from.
+	 * @param	Bitmap			Optional BitmapData object to create FlxGraphic from.
+	 * @param	BitmapClass	Optional Class for BitmapData to create FlxGraphic from.
+	 * @param	Str			Optional String key to use for FlxGraphic instantiation.
+	 * @param	Unique			Ensures that the bitmap data uses a new slot in the cache.
+	 * @param	Key				Force the cache to use a specific Key to index the bitmap.
+	 * @return	The FlxGraphic we just created.
 	 */
-	public function add(graphic:FlxGraphicAsset, unique = false, ?key:String):FlxGraphic
+	public function add(Graphic:FlxGraphicAsset, Unique:Bool = false, ?Key:String):FlxGraphic
 	{
-		if ((graphic is FlxGraphic))
+		if ((Graphic is FlxGraphic))
 		{
-			return FlxGraphic.fromGraphic(cast graphic, unique, key);
+			return FlxGraphic.fromGraphic(cast Graphic, Unique, Key);
 		}
-		else if ((graphic is BitmapData))
+		else if ((Graphic is BitmapData))
 		{
-			return FlxGraphic.fromBitmapData(cast graphic, unique, key);
+			return FlxGraphic.fromBitmapData(cast Graphic, Unique, Key);
 		}
-
+		
 		// String case
-		return FlxGraphic.fromAssetKey(Std.string(graphic), unique, key);
+		return FlxGraphic.fromAssetKey(Std.string(Graphic), Unique, Key);
 	}
-
+	
 	/**
 	 * Caches specified FlxGraphic object.
 	 *
@@ -171,7 +171,7 @@ class BitmapFrontEnd
 		graphic.mustDestroy = false;
 		return graphic;
 	}
-
+	
 	/**
 	 * Gets FlxGraphic object from this storage by specified key.
 	 * @param	key	Key for FlxGraphic object (its name)
@@ -184,7 +184,7 @@ class BitmapFrontEnd
 			graphic.mustDestroy = false;
 		return graphic;
 	}
-
+	
 	/**
 	 * Gets key from bitmap cache for specified BitmapData
 	 *
@@ -201,7 +201,7 @@ class BitmapFrontEnd
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Helper method for getting cache key for FlxGraphic objects created from the class.
 	 *
@@ -212,11 +212,11 @@ class BitmapFrontEnd
 	{
 		return Type.getClassName(source);
 	}
-
+	
 	/**
 	 * Creates string key for further caching.
 	 *
-	 * @param	systemKey	The first string key to use as a base for a new key. It's usually an asset key ("assets/image.png").
+	 * @param	systemKey	The first string key to use as a base for a new key. It's usually a key from openfl.Assets ("assets/image.png").
 	 * @param	userKey		The second string key to use as a base for a new key. It's usually a key provided by the user
 	 * @param	unique		Whether generated key should be unique or not.
 	 * @return	Created key.
@@ -226,13 +226,13 @@ class BitmapFrontEnd
 		var key:String = userKey;
 		if (key == null)
 			key = systemKey;
-
+			
 		if (unique || key == null)
 			key = getUniqueKey(key);
-
+			
 		return key;
 	}
-
+	
 	/**
 	 * Gets unique key for bitmap cache
 	 *
@@ -243,10 +243,10 @@ class BitmapFrontEnd
 	{
 		if (baseKey == null)
 			baseKey = "pixels";
-
+			
 		if (!checkCache(baseKey))
 			return baseKey;
-
+			
 		var i:Int = _lastUniqueKeyIndex;
 		var uniqueKey:String;
 		do
@@ -255,11 +255,11 @@ class BitmapFrontEnd
 			uniqueKey = baseKey + i;
 		}
 		while (checkCache(uniqueKey));
-
+		
 		_lastUniqueKeyIndex = i;
 		return uniqueKey;
 	}
-
+	
 	/**
 	 * Generates key from provided base key and information about tile size and offsets in spritesheet
 	 * and the region of image to use as spritesheet graphics source.
@@ -273,37 +273,35 @@ class BitmapFrontEnd
 	public function getKeyWithSpacesAndBorders(baseKey:String, ?frameSize:FlxPoint, ?frameSpacing:FlxPoint, ?frameBorder:FlxPoint, ?region:FlxRect):String
 	{
 		var result:String = baseKey;
-
+		
 		if (region != null)
 			result += "_Region:" + region.x + "_" + region.y + "_" + region.width + "_" + region.height;
-
+			
 		if (frameSize != null)
 			result += "_FrameSize:" + frameSize.x + "_" + frameSize.y;
-
+			
 		if (frameSpacing != null)
 			result += "_Spaces:" + frameSpacing.x + "_" + frameSpacing.y;
-
+			
 		if (frameBorder != null)
 			result += "_Border:" + frameBorder.x + "_" + frameBorder.y;
-
+			
 		return result;
 	}
-
+	
 	/**
 	 * Totally removes specified FlxGraphic object.
-	 * @param   graphic  object you want to remove and destroy.
+	 * @param	FlxGraphic object you want to remove and destroy.
 	 */
 	public function remove(graphic:FlxGraphic):Void
 	{
 		if (graphic != null)
 		{
 			removeKey(graphic.key);
-			// TODO: find causes of this, and prevent crashes from double graphic destroys
-			if (!graphic.isDestroyed)
-				graphic.destroy();
+			graphic.destroy();
 		}
 	}
-
+	
 	/**
 	 * Totally removes FlxGraphic object with specified key.
 	 * @param	key	the key for cached FlxGraphic object.
@@ -314,24 +312,24 @@ class BitmapFrontEnd
 		{
 			var obj = get(key);
 			removeKey(key);
-
+			
 			if (obj != null)
 				obj.destroy();
 		}
 	}
-
+	
 	public function removeIfNoUse(graphic:FlxGraphic):Void
 	{
 		if (graphic != null && graphic.useCount == 0 && !graphic.persist)
 			remove(graphic);
 	}
-
+	
 	@:allow(flixel.graphics.FlxGraphic)
 	var __doNotDelete:Bool = false;
-
+	
 	var __countCache:Array<FlxGraphic> = [];
 	var __cacheCopy:Map<String, FlxGraphic> = [];
-
+	
 	/**
 	 * Clears image cache (and destroys those images).
 	 * Graphics object will be removed and destroyed only if it shouldn't persist in the cache and its useCount is 0.
@@ -343,14 +341,14 @@ class BitmapFrontEnd
 			_cache = new Map();
 			return;
 		}
-
+		
 		__doNotDelete = false;
-
+		
 		for (g in __countCache)
-			g.useCount -= 10;
-
+			g.decrementUseCount(10);
+			
 		__countCache = [];
-
+		
 		for (key in __cacheCopy.keys())
 		{
 			var obj = __cacheCopy.get(key);
@@ -365,10 +363,10 @@ class BitmapFrontEnd
 				obj.destroy();
 			}
 		}
-
+		
 		__cacheCopy = [];
 	}
-
+	
 	/**
 	 * Maps the entire cache as destroyable, aka must be cleared.
 	 */
@@ -376,9 +374,9 @@ class BitmapFrontEnd
 	{
 		if (_cache == null)
 			_cache = new Map();
-
+			
 		__countCache = [];
-
+		
 		__doNotDelete = true;
 		__cacheCopy = [];
 		for (k => e in _cache)
@@ -388,7 +386,7 @@ class BitmapFrontEnd
 			if (e.assetsKey != null)
 			{
 				__countCache.push(e);
-				e.useCount += 10;
+				e.incrementUseCount(10);
 			}
 			else if (e.destroyOnNoUse)
 			{
@@ -399,7 +397,7 @@ class BitmapFrontEnd
 			__cacheCopy.set(k, e);
 		}
 	}
-
+	
 	inline function removeKey(key:String):Void
 	{
 		if (key != null)
@@ -408,7 +406,7 @@ class BitmapFrontEnd
 			_cache.remove(key);
 		}
 	}
-
+	
 	/**
 	 * Completely resets bitmap cache, which means destroying ALL of the cached FlxGraphic objects.
 	 */
@@ -419,17 +417,17 @@ class BitmapFrontEnd
 			_cache = new Map();
 			return;
 		}
-
+		
 		for (key in _cache.keys())
 		{
 			var obj = get(key);
 			removeKey(key);
-
+			
 			if (obj != null)
 				obj.destroy();
 		}
 	}
-
+	
 	/**
 	 * Removes all unused graphics from cache,
 	 * but skips graphics which should persist in cache and shouldn't be destroyed on no use.
@@ -445,17 +443,14 @@ class BitmapFrontEnd
 			}
 		}
 	}
-
-	#if FLX_OPENGL_AVAILABLE
+	
+	#if !flash
 	function get_maxTextureSize():Int
 	{
-		if (FlxG.stage.window.context.attributes.hardware)
-			return cast GL.getParameter(GL.MAX_TEXTURE_SIZE);
-		
-		return -1;
+		return cast GL.getParameter(GL.MAX_TEXTURE_SIZE);
 	}
 	#end
-
+	
 	function get_whitePixel():FlxFrame
 	{
 		if (_whitePixel == null)
@@ -465,7 +460,7 @@ class BitmapFrontEnd
 			graphic.persist = true;
 			_whitePixel = graphic.imageFrame.frame;
 		}
-
+		
 		return _whitePixel;
 	}
 }
