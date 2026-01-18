@@ -1,5 +1,6 @@
 package flixel.graphics.frames;
 
+import flixel.FlxTypes.ByteInt;
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

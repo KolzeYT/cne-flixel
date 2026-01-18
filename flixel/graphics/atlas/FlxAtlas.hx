@@ -3,6 +3,7 @@ package flixel.graphics.atlas;
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 import flixel.FlxG;
+import flixel.system.FlxAssets.FlxGraphicSource;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;

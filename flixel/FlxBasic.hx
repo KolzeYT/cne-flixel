@@ -1,5 +1,6 @@
 package flixel;
 
+import flixel.FlxTypes.ByteUInt;
 import flixel.group.FlxContainer;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxStringUtil;

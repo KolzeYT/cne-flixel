@@ -373,6 +373,7 @@ class FlxG
 		#else
 		Lib.application.window.resize(width, height);
 		#end
+		#end
 	}
 
 	/**

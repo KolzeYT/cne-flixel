@@ -220,11 +220,6 @@ class FlxBar extends FlxSprite
 			_emptyBar = FlxDestroyUtil.dispose(_emptyBar);
 			_filledBar = FlxDestroyUtil.dispose(_filledBar);
 		}
-		else
-		{
-			_frontFrame = null;
-			_filledFlxRect = FlxDestroyUtil.put(_filledFlxRect);
-		}
 		_filledBarRect = null;
 		_filledBarPoint = null;
 

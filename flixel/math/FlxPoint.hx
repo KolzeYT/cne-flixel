@@ -424,9 +424,6 @@ class FlxBasePoint implements IFlxPooled
 		return point;
 	}
 
-	public var x(default, set):Float = 0;
-	public var y(default, set):Float = 0;
-
 	/**
 	 * The horizontal component of the unit point
 	 */
@@ -527,6 +524,13 @@ class FlxBasePoint implements IFlxPooled
 		point.putWeak();
 		return this;
 	}
+
+	/**
+	 * Necessary for IFlxDestroyable.
+	 */
+	public function destroy() {}
+
+	public function put():Void {} // don't pool FlxCallbackPoints
 
 	/**
 	 * Subtracts from the coordinates of this point.
@@ -1586,156 +1590,6 @@ class FlxBasePoint implements IFlxPooled
 	inline function get_ly():Float
 	{
 		return -x;
-	}
-}
-
-/**
- * The base class of FlxPoint, just use FlxPoint instead.
- * 
- * Note to contributors: don't worry about adding functionality to the base class.
- * it's all mostly inlined anyway so there's no runtime definitions for
- * reflection or anything.
- */
-@:noCompletion
-@:noDoc
-@:allow(flixel.math.FlxPoint)
-class FlxBasePoint implements IFlxPooled
-{
-	#if FLX_POINT_POOL
-	static var pool:FlxPool<FlxBasePoint> = new FlxPool(FlxBasePoint.new.bind(0, 0));
-	#end
-
-	/**
-	 * Recycle or create a new FlxBasePoint.
-	 * Be sure to put() them back into the pool after you're done with them!
-	 *
-	 * @param   x  The X-coordinate of the point in space.
-	 * @param   y  The Y-coordinate of the point in space.
-	 * @return  This point.
-	 */
-	public static inline function get(x:Float = 0, y:Float = 0):FlxBasePoint
-	{
-		#if FLX_POINT_POOL
-		var point = pool.get().set(x, y);
-		point._inPool = false;
-		return point;
-		#else
-		return new FlxBasePoint(x, y);
-		#end
-	}
-
-	/**
-	 * Recycle or create a new FlxBasePoint which will automatically be released
-	 * to the pool when passed into a flixel function.
-	 *
-	 * @param   x  The X-coordinate of the point in space.
-	 * @param   y  The Y-coordinate of the point in space.
-	 * @return  This point.
-	 */
-	public static inline function weak(x:Float = 0, y:Float = 0):FlxBasePoint
-	{
-		var point = get(x, y);
-		#if FLX_POINT_POOL
-		point._weak = true;
-		#end
-		return point;
-	}
-
-	public var x(default, set):Float = 0;
-	public var y(default, set):Float = 0;
-
-	#if FLX_POINT_POOL
-	var _weak:Bool = false;
-	var _inPool:Bool = false;
-	#end
-
-	@:keep
-	public inline function new(x:Float = 0, y:Float = 0)
-	{
-		set(x, y);
-	}
-
-	/**
-	 * Set the coordinates of this point object.
-	 *
-	 * @param   x  The X-coordinate of the point in space.
-	 * @param   y  The Y-coordinate of the point in space.
-	 */
-	public function set(x:Float = 0, y:Float = 0):FlxBasePoint
-	{
-		this.x = x;
-		this.y = y;
-		return this;
-	}
-
-	/**
-	 * Add this FlxBasePoint to the recycling pool.
-	 */
-	public function put():Void
-	{
-		#if FLX_POINT_POOL
-		if (!_inPool)
-		{
-			_inPool = true;
-			_weak = false;
-			pool.putUnsafe(this);
-		}
-		#end
-	}
-
-	/**
-	 * Add this FlxBasePoint to the recycling pool if it's a weak reference (allocated via weak()).
-	 */
-	public inline function putWeak():Void
-	{
-		#if FLX_POINT_POOL
-		if (_weak)
-		{
-			put();
-		}
-		#end
-	}
-
-	/**
-	 * Function to compare this FlxBasePoint to another.
-	 *
-	 * @param   point  The other FlxBasePoint to compare to this one.
-	 * @return  True if the FlxBasePoints have the same x and y value, false otherwise.
-	 */
-	public inline function equals(point:FlxBasePoint):Bool
-	{
-		var result = FlxMath.equal(x, point.x) && FlxMath.equal(y, point.y);
-		point.putWeak();
-		return result;
-	}
-
-	/**
-	 * Necessary for IFlxDestroyable.
-	 */
-	public function destroy() {}
-
-	/**
-	 * Convert object to readable string name. Useful for debugging, save games, etc.
-	 */
-	public inline function toString():String
-	{
-		return FlxStringUtil.getDebugString([LabelValuePair.weak("x", x), LabelValuePair.weak("y", y)]);
-	}
-
-	/**
-	 * Necessary for FlxCallbackPoint.
-	 */
-	function set_x(Value:Float):Float
-	{
-		return x = Value;
-	}
-
-	/**
-	 * Necessary for FlxCallbackPoint.
-	 */
-	function set_y(Value:Float):Float
-	{
-		return y = Value;
 	}
 }
 

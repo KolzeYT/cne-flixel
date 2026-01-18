@@ -1,5 +1,6 @@
 package flixel.effects.particles;
 
+import flixel.FlxTypes.ByteUInt;
 import openfl.display.BlendMode;
 import flixel.FlxG;
 import flixel.FlxObject;

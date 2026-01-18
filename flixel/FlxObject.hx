@@ -1,5 +1,6 @@
 package flixel;
 
+import flixel.FlxTypes.ByteUInt;
 import openfl.display.Graphics;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;

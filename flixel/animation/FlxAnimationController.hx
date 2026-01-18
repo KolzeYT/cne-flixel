@@ -125,56 +125,6 @@ class FlxAnimationController implements IFlxDestroyable
 	public var loopCallback:(animName:String) -> Void;
 
 	/**
-	 * Dispatches each time the current animation's frame changes
-	 *
-	 * @param   animName     The name of the current animation
-	 * @param   frameNumber  The progress of the current animation, in frames
-	 * @param   frameIndex   The current animation's frameIndex in the tile sheet
-	 * @since 5.9.0
-	 */
-	public final onFrameChange = new FlxTypedSignal<(animName:String, frameNumber:Int, frameIndex:Int) -> Void>();
-
-	/**
-	 * Dispatches each time the current animation finishes.
-	 *
-	 * @param   animName  The name of the current animation
-	 * @since 5.9.0
-	 */
-	public final onFinish = new FlxTypedSignal<(animName:String) -> Void>();
-
-	/**
-	 * Dispatches each time the last frame of an animation finishes.
-	 * 
-	 * @param animName The name of the animation that ended
-	 */
-	public final onFinishEnd = new FlxTypedSignal<(animName:String) -> Void>();
-
-	/**
-	 * Dispatches each time the current animation is played.
-	 *
-	 * @param   animName     The name of the current animation
-	 * @param   forced       Whether the animation was forced to play
-	 * @param   reversed     Whether the animation was played in reverse
-	 * @param   frame        The current animation's frameIndex in the tile sheet
-	 * @since 5.9.0
-	 */
-	public final onPlay = new FlxTypedSignal<(animName:String, forced:Bool, reversed:Bool, frame:Int) -> Void>();
-
-	/**
-	 * Dispatches each time the current animation's loop is complete.
-	 * Works only with looped animations.
-	 *
-	 * @param   animName  The name of the current animation
-	 * @since 5.9.0
-	 */
-	public final onLoop = new FlxTypedSignal<(animName:String) -> Void>();
-
-	/**
-	 * How fast or slow time should pass for this animation controller
-	 */
-	public var timeScale:Float = 1.0;
-
-	/**
 	 * Internal, reference to owner sprite.
 	 */
 	var _sprite:FlxSprite;
@@ -832,12 +782,6 @@ class FlxAnimationController implements IFlxDestroyable
 			loopCallback(name);
 		}
 
-		onLoop.dispatch(name);
-	}
-
-	@:allow(flixel.animation)
-	function fireLoopCallback(?name:String):Void
-	{
 		onLoop.dispatch(name);
 	}
 

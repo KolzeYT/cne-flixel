@@ -590,11 +590,6 @@ class FlxGraphic implements IFlxDestroyable
 		return shader == null;
 	}
 
-	inline function get_isDestroyed()
-	{
-		return shader == null;
-	}
-
 	inline function get_canBeDumped():Bool
 	{
 		return assetsClass != null || assetsKey != null;
